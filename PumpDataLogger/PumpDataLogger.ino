@@ -36,24 +36,15 @@ void loop() {
   Voltage = getVPP();
   VRMS = (Voltage/2.0)*0.707; 
   AmpsRMS = (VRMS * 1000)/mVperAmp;
-  /*Serial.print(AmpsRMS);
-  Serial.println(" Amps RMS");*/
 
-  /*if(postingInterval < 0){
-    postingInterval = 20;
-    Serial.println("entered");*/
-    if (client.connect(server, 80)) {
-      // Check the state
-      long state = AmpsRMS > 5 ? 1 : 0;
-
-      sendData(state);
-      //Serial.println("SENT!!!");
-    }
-    client.stop();
-  //}
-  
-  //postingInterval--;
-  //Serial.println(postingInterval);
+  if (client.connect(server, 80)) {
+    // Check the state
+    // Serial.print("\nAmpsRMS: ");
+    // Serial.print(AmpsRMS);
+    long state = AmpsRMS > 2 ? 1 : 0;
+    sendData(state);
+  }
+  client.stop();
 
   // wait and then post again
   delay(postingInterval);
@@ -74,6 +65,9 @@ void sendData(long state){
   client.println("Content-Length: " + String(body.length()));
   client.println("");
   client.print(body);
+
+//  Serial.print("\nSENT: ");
+//  Serial.print(state);0
 }
 
 
@@ -81,9 +75,9 @@ float getVPP()
 {
   float result;
   
-  int readValue;             //value read from the sensor
-  int maxValue = 0;          // store max value here
-  int minValue = 1024;          // store min value here
+  int readValue;        //value read from the sensor
+  int maxValue = 0;     // store max value here
+  int minValue = 1024;  // store min value here
   
    uint32_t start_time = millis();
    while((millis()-start_time) < 1000) //sample for 1 Sec
@@ -107,4 +101,3 @@ float getVPP()
       
    return result;
 }
-
